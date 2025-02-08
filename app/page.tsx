@@ -54,7 +54,7 @@ export default function Dashboard() {
         setSecurityData(securityResult.data)
       }
 
-      Fetch phishing data
+      
       const phishingResult = await phishingAnalysisService.getAllPhishingData({
         url: "https://www.google.com",
         domain: "google.com",
