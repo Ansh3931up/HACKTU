@@ -2,16 +2,70 @@
 
 import { useEffect, useState } from "react"
 import { threatAnalysisService, type ThreatAnalysisData } from "@/services/api/threatAnalysisService"
-import ThreatMap from "@/components/Threat Analysis/ThreatMap"
-import ThreatTimeline from "@/components/Threat Analysis/ThreatTimeline"
-import ThreatDetails from "@/components/Threat Analysis/ThreatDetails"
-import AdvancedThreatAnalysis from "@/components/Threat Analysis/AdvancedThreatAnalysis"
+// import ThreatMap from "@/components/Threat Analysis/ThreatMap"
+// import ThreatTimeline from "@/components/Threat Analysis/ThreatTimeline"
+// import ThreatDetails from "@/components/Threat Analysis/ThreatDetails"
+// import AdvancedThreatAnalysis from "@/components/Threat Analysis/AdvancedThreatAnalysis"
 import Header from "@/components/Header"
+
+interface APTData {
+  Src_IP: string;
+  Dst_IP: string;
+  Src_Port: number;
+  Dst_Port: number;
+  Protocol: number;
+  Flow_Duration: number;
+  Total_Fwd_Packets: number;
+  Total_Bwd_Packets: number;
+  Total_Length_of_Fwd_Packets: number;
+  Total_Length_of_Bwd_Packets: number;
+  [key: string]: any;
+}
+
+interface APTPrediction {
+  confidence: number;
+  index: number;
+  prediction: string;
+}
+
+interface APTResponse {
+  data_shape: number;
+  features_used: string[];
+  message: string;
+  predictions: APTPrediction[];
+  status: string;
+}
+
+interface PhishingFeatures {
+  directory_length: number;
+  domain_google_index: number;
+  domain_in_ip: number;
+  // ... add other feature fields
+}
+
+interface PhishingData {
+  features: PhishingFeatures;
+  message: string;
+  url: string;
+}
+
+interface PhishingPrediction {
+  confidence: number;
+  feature_values: Record<string, number>;
+  features_used: string[];
+  message: string;
+  prediction: string;
+}
 
 export default function ThreatAnalysis() {
   const [data, setData] = useState<ThreatAnalysisData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [aptData, setAptData] = useState<APTData[]>([])
+  const [predictions, setPredictions] = useState<APTResponse | null>(null)
+  const [url, setUrl] = useState<string>("")
+  const [phishingData, setPhishingData] = useState<PhishingData | null>(null)
+  const [phishingPrediction, setPhishingPrediction] = useState<PhishingPrediction | null>(null)
 
   const fetchThreatAnalysisData = async () => {
     try {
@@ -67,7 +121,7 @@ export default function ThreatAnalysis() {
       const response = await fetch(`http://172.16.85.30:5000/extract_apt_data?packet_count=${packet_count}`)
       const responseData = await response.json();
       const data = responseData.data || responseData;
-      console.log('APT Data:', data);
+      setAptData(data);
       return data;
     } catch (error) {
       console.error('Error extracting apt data:', error);
@@ -98,14 +152,8 @@ export default function ThreatAnalysis() {
         body: JSON.stringify(cleanedData)
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Server error:', errorData);
-        throw new Error(`Server error: ${errorData.error || response.statusText}`);
-      }
-
       const result = await response.json();
-      console.log('APT Prediction:', result);
+      setPredictions(result);
       return result;
     } catch (error) {
       console.error("Error predicting apt:", error);
@@ -185,6 +233,18 @@ export default function ThreatAnalysis() {
     return () => clearInterval(interval)
   }, [])
 
+  const handlePhishingAnalysis = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const extractedData = await extractPhishingData(url);
+      setPhishingData(extractedData);
+      const prediction = await predictPhishing(extractedData);
+      setPhishingPrediction(prediction);
+    } catch (error) {
+      console.error('Error in phishing analysis:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#EEECEF] dark:bg-[#1F1F1F] flex items-center justify-center">
@@ -208,25 +268,162 @@ export default function ThreatAnalysis() {
   return (
     <div className="min-h-screen bg-[#EEECEF] dark:bg-[#1F1F1F]">
       <Header
-        title="Threat Analysis"
-        subtitle="Monitor your network traffic and connected devices"
+        title="APT & Phishing Detection Analysis"
+        subtitle="Monitor network traffic and analyze URLs for threats"
       />
-      <div className="container mx-auto p-6 bg-[#EEECEF] dark:bg-[#1F1F1F]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ThreatMap threats={data.networkData.threats} />
-          <ThreatTimeline events={data.networkData.threats} />
+      <div className="container mx-auto p-6">
+        {/* Phishing Analysis Section */}
+        <div className="mb-8 bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
+          <h2 className="text-xl font-semibold mb-4">Phishing URL Analysis</h2>
+          <form onSubmit={handlePhishingAnalysis} className="mb-6">
+            <div className="flex gap-4">
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Enter URL to analyze"
+                className="flex-1 px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                required
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Analyze
+              </button>
+            </div>
+          </form>
+
+          {phishingPrediction && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Prediction Result</h3>
+              <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Prediction</p>
+                    <p className={`text-lg font-semibold ${
+                      phishingPrediction.prediction === "1" 
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-green-600 dark:text-green-400"
+                    }`}>
+                      {phishingPrediction.prediction === "1" ? "Phishing" : "Legitimate"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Confidence</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                        <div 
+                          className="bg-blue-600 h-2.5 rounded-full"
+                          style={{ width: `${phishingPrediction.confidence * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm">
+                        {(phishingPrediction.confidence * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {phishingData && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Extracted Features</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(phishingData.features).map(([key, value]) => (
+                  <div key={key} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{key}</p>
+                    <p className="text-lg font-semibold">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <div className="mb-8">
-          <AdvancedThreatAnalysis 
-            networkStatus={data.networkHealth}
-            threatMetrics={data.threatMetrics}
-          />
-        </div>
-        <div>
-          <ThreatDetails 
-            threats={data.networkData.threats}
-            devices={data.devices} 
-          />
+
+        {/* APT Analysis Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Network Traffic Data */}
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold mb-4">Network Traffic Data</h2>
+            <div className="overflow-auto max-h-[600px]">
+              <table className="min-w-full">
+                <thead className="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th className="px-4 py-2">Source IP</th>
+                    <th className="px-4 py-2">Destination IP</th>
+                    <th className="px-4 py-2">Protocol</th>
+                    <th className="px-4 py-2">Packets</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {aptData.map((packet, index) => (
+                    <tr key={index} className="border-b dark:border-gray-700">
+                      <td className="px-4 py-2">{packet['Src IP']}</td>
+                      <td className="px-4 py-2">{packet['Dst IP']}</td>
+                      <td className="px-4 py-2">{packet.Protocol}</td>
+                      <td className="px-4 py-2">
+                        Fwd: {packet['Total Fwd Packets']}, Bwd: {packet['Total Bwd Packets']}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Predictions */}
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold mb-4">APT Detection Results</h2>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Status: {predictions?.status}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Message: {predictions?.message}
+              </p>
+            </div>
+            <div className="overflow-auto max-h-[600px]">
+              <table className="min-w-full">
+                <thead className="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th className="px-4 py-2">Index</th>
+                    <th className="px-4 py-2">Prediction</th>
+                    <th className="px-4 py-2">Confidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {predictions?.predictions.map((pred, index) => (
+                    <tr key={index} className="border-b dark:border-gray-700">
+                      <td className="px-4 py-2">{pred.index}</td>
+                      <td className="px-4 py-2">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          pred.prediction === 'NormalTraffic' 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                        }`}>
+                          {pred.prediction}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                          <div 
+                            className="bg-blue-600 h-2.5 rounded-full"
+                            style={{ width: `${pred.confidence * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          {(pred.confidence * 100).toFixed(1)}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
