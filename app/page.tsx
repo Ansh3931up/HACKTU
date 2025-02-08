@@ -144,7 +144,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         <NetworkHealth networkData={networkData} />
         <ThreatOverview response={threatData} />
-        <RecentAlerts alerts={alertData} />
+        <RecentAlerts data={alertData} />
         <SecurityScore data={securityData.data} />
       </div>
     </div>

@@ -2,34 +2,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Doughnut } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js"
-import { Shield, Network, HardDrive } from "lucide-react"
+import { Shield, Network, HardDrive, Activity, AlertCircle, Database, Lock } from "lucide-react"
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
+interface SecurityDetails {
+  score: number;
+  status: string;
+  issues?: number;
+  openPorts?: number;
+  activeConnections?: number;
+  criticalDisks?: number;
+}
+
+interface SecurityScoreData {
+  score: number;
+  secure: number;
+  atRisk: number;
+  details: {
+    system: SecurityDetails;
+    network: SecurityDetails;
+    storage: SecurityDetails;
+  };
+  recommendations: string[];
+  timestamp: string;
+}
+
 interface SecurityScoreProps {
-  data: {
-    score: number;
-    details: {
-      system: {
-        issues: number;
-        status: string;
-        score: number;
-      };
-      network: {
-        openPorts: number;
-        activeConnections: number;
-        status: string;
-        score: number;
-      };
-      storage: {
-        criticalDisks: number;
-        status: string;
-        score: number;
-      };
-    };
-    recommendations: string[];
-    timestamp: string;
-  }
+  data: SecurityScoreData;
 }
 
 // Dummy data
@@ -58,17 +58,28 @@ export const dummySecurityData = {
 }
 
 const SecurityScore = ({ data }: SecurityScoreProps) => {
+  console.log('d1',data);
+  if (!data || !data.details) {
+    return (
+      <Card className="bg-white dark:bg-[#111011] shadow-xl">
+        <CardContent className="p-6">
+          <div className="text-center text-gray-500">No data available</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const chartData = {
     labels: ["Secure", "At Risk"],
     datasets: [
       {
-        data: [data.score, 100 - data.score],
+        data: [data.secure, data.atRisk],
         backgroundColor: ["#2E7D32", "#C62828"],
         hoverBackgroundColor: ["#1B5E20", "#8E0000"],
         borderWidth: 0,
       },
     ],
-  }
+  };
 
   const options = {
     cutout: "70%",
@@ -86,18 +97,20 @@ const SecurityScore = ({ data }: SecurityScoreProps) => {
         }
       }
     },
-  }
+  };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Secure":
-        return "bg-green-50 text-green-500"
-      case "At Risk":
-        return "bg-red-50 text-red-500"
+    switch (status.toLowerCase()) {
+      case 'excellent':
+        return 'text-green-600 bg-green-50 dark:bg-green-900/20';
+      case 'good':
+        return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20';
+      case 'fair':
+        return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20';
       default:
-        return "bg-gray-50 text-gray-500"
+        return 'text-red-600 bg-red-50 dark:bg-red-900/20';
     }
-  }
+  };
 
   return (
     <Card className="bg-white dark:bg-[#111011] shadow-xl">
@@ -111,9 +124,10 @@ const SecurityScore = ({ data }: SecurityScoreProps) => {
           </span>
         </div>
       </CardHeader>
+
       <CardContent className="pt-4 md:pt-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {/* Score Doughnut - Responsive container */}
+          {/* Score Doughnut */}
           <div className="col-span-1 flex justify-center items-center">
             <div className="relative w-32 h-32 md:w-48 md:h-48">
               <Doughnut data={chartData} options={options} />
@@ -128,72 +142,46 @@ const SecurityScore = ({ data }: SecurityScoreProps) => {
             </div>
           </div>
 
-          {/* Details - Now more compact on mobile */}
+          {/* Category Summary */}
           <div className="col-span-1 md:col-span-2 space-y-2 md:space-y-4">
-            {/* System Status */}
-            <div className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30">
-              <div className="flex items-center gap-2 md:gap-3">
-                <Shield className="text-old-money-forest-green" size={16} />
-                <div>
-                  <div className="text-sm md:text-base font-medium">System Security</div>
-                  <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                    {data.details.system.issues} issues found
+            {data.details && Object.entries(data.details).map(([category, details]) => (
+              <div key={category} className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30">
+                <div className="flex items-center gap-2 md:gap-3">
+                  {getAlertIcon(category)}
+                  <div>
+                    <div className="text-sm md:text-base font-medium capitalize">{category}</div>
+                    <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                      {category === 'network' && details.openPorts !== undefined && details.activeConnections !== undefined
+                        ? `${details.openPorts} ports • ${details.activeConnections} connections`
+                        : category === 'system' && details.issues !== undefined
+                        ? `${details.issues} issues`
+                        : category === 'storage' && details.criticalDisks !== undefined
+                        ? `${details.criticalDisks} critical disks`
+                        : 'No data'}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <span className={`px-2 py-1 rounded-full text-xs md:text-sm ${getStatusColor(data.details.system.status)}`}>
-                {data.details.system.score}%
-              </span>
-            </div>
-
-            {/* Network Status */}
-            <div className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30">
-              <div className="flex items-center gap-2 md:gap-3">
-                <Network className="text-old-money-gold" size={16} />
-                <div>
-                  <div className="text-sm md:text-base font-medium">Network Security</div>
-                  <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                    {data.details.network.openPorts} ports • {data.details.network.activeConnections} conn.
-                  </div>
+                <div className="flex flex-col items-end">
+                  <span className={`px-2 py-1 rounded-full text-xs md:text-sm ${getStatusColor(details.status)}`}>
+                    {details.status}
+                  </span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    {details.score}%
+                  </span>
                 </div>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs md:text-sm ${getStatusColor(data.details.network.status)}`}>
-                {data.details.network.score}%
-              </span>
-            </div>
-
-            {/* Storage Status */}
-            <div className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30">
-              <div className="flex items-center gap-2 md:gap-3">
-                <HardDrive className="text-old-money-burgundy" size={16} />
-                <div>
-                  <div className="text-sm md:text-base font-medium">Storage Security</div>
-                  <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                    {data.details.storage.criticalDisks} critical disks
-                  </div>
-                </div>
-              </div>
-              <span className={`px-2 py-1 rounded-full text-xs md:text-sm ${getStatusColor(data.details.storage.status)}`}>
-                {data.details.storage.score}%
-              </span>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Recommendations - More compact on mobile */}
+        {/* Recommendations */}
         {data.recommendations.length > 0 && (
-          <div className="mt-4 md:mt-6">
-            <div className="flex items-center gap-2 mb-2 md:mb-3">
-              <AlertCircle size={14} className="text-old-money-gold" />
-              <h3 className="text-sm md:text-base font-medium">Recommendations</h3>
-            </div>
-            <ul className="space-y-1 md:space-y-2">
+          <div className="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/30">
+            <div className="text-sm font-medium mb-2">Recommendations</div>
+            <ul className="space-y-1">
               {data.recommendations.map((rec, index) => (
-                <li 
-                  key={index}
-                  className="text-xs md:text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2"
-                >
-                  <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-old-money-gold rounded-full"></span>
+                <li key={index} className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
                   {rec}
                 </li>
               ))}
@@ -202,7 +190,23 @@ const SecurityScore = ({ data }: SecurityScoreProps) => {
         )}
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default SecurityScore
+// Helper function to get icon for category
+const getAlertIcon = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'system':
+      return <Activity className="text-blue-500" size={20} />;
+    case 'network':
+      return <Network className="text-purple-500" size={20} />;
+    case 'security':
+      return <Lock className="text-red-500" size={20} />;
+    case 'storage':
+      return <Database className="text-green-500" size={20} />;
+    default:
+      return <AlertCircle className="text-gray-500" size={20} />;
+  }
+};
+
+export default SecurityScore;
