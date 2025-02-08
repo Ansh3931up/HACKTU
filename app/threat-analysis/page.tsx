@@ -32,6 +32,153 @@ export default function ThreatAnalysis() {
     }
   }
 
+  // Add new functions for system logs
+  const fetchSystemLogs = async () => {
+    try {
+      const response = await fetch('http://172.16.85.30:5000/extract_system_logs?hours=24');
+      const logs = await response.json();
+      console.log('System Logs from last hour:', logs);
+      return logs;
+    } catch (error) {
+      console.error('Error fetching system logs:', error);
+      return [];
+    }
+  };
+
+  const analyzeSystemLogs = async(logs: any) => {
+    try {
+      const response = await fetch('http://172.16.85.30:5000/analyze_system_logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ logs })
+      });
+      const data = await response.json();
+      console.log('System Logs Analysis:', data);
+    } catch (error) {
+      console.error('Error analyzing system logs:', error);
+    }
+  }
+
+  // Add APT analysis functions
+  const extractAptData = async(packet_count: number = 100) => {
+    try {
+      const response = await fetch(`http://172.16.85.30:5000/extract_apt_data?packet_count=${packet_count}`)
+      const responseData = await response.json();
+      const data = responseData.data || responseData;
+      console.log('APT Data:', data);
+      return data;
+    } catch (error) {
+      console.error('Error extracting apt data:', error);
+      return [];
+    }
+  }
+
+  const predictApt = async(AptData: any) => {
+    try {
+      const dataArray = AptData.data || AptData;
+      const cleanedData = dataArray.map((packet: any) => {
+        const cleaned: any = {};
+        Object.entries(packet).forEach(([key, value]) => {
+          if (key === 'Src IP' || key === 'Dst IP' || typeof value === 'string' && isNaN(Number(value))) {
+            cleaned[key] = value;
+          } else {
+            cleaned[key] = typeof value === 'string' ? Number(value) : value;
+          }
+        });
+        return cleaned;
+      });
+
+      const response = await fetch('http://172.16.85.30:5000/predict_apt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cleanedData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Server error:', errorData);
+        throw new Error(`Server error: ${errorData.error || response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('APT Prediction:', result);
+      return result;
+    } catch (error) {
+      console.error("Error predicting apt:", error);
+      return [];
+    }
+  }
+
+  // Add phishing analysis functions
+  const extractPhishingData = async(url: string) => {
+    try {
+      const response = await fetch('http://172.16.85.30:5000/extract_url_features', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({url})
+      })      
+      const data = await response.json();
+      console.log("Phishing data", data);
+      return data;
+    } catch (error) {
+      console.log("Error while extracting phishing data", error);
+      return [];
+    }
+  }
+
+  const predictPhishing = async(phishingData: any) => {
+    try {
+      const response = await fetch('http://172.16.85.30:5000/predict_phishing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(phishingData)
+      })
+      const data = await response.json();
+      console.log("Phishing prediction", data);
+      return data;
+    } catch (error) {
+      console.log("Error while predicting phishing", error);
+      return [];
+    }
+  }
+
+  // Add combined analysis functions
+  const doublelogs = async() => {
+    const aptData = await extractAptData();
+    console.log("Started extracting apt data", aptData);
+    const prediction = await predictApt(aptData);
+    console.log("APT prediction completed", prediction);
+    const logs = await fetchSystemLogs();
+    console.log("Started analyzing system logs");
+    analyzeSystemLogs(logs);
+  }
+
+  const doublephishing = async() => {
+    const url = "https://www.google.com";
+    const phishingData = await extractPhishingData(url);
+    console.log("Started extracting phishing data", phishingData);
+    const prediction = await predictPhishing(phishingData);
+    console.log("Phishing prediction completed", prediction);
+  }
+
+  // Add new useEffects
+  useEffect(() => {
+    doublelogs();
+  }, []);
+
+  useEffect(() => {
+    doublephishing();
+  }, []);
+
+  // Existing useEffect for threat analysis
   useEffect(() => {
     fetchThreatAnalysisData()
     const interval = setInterval(fetchThreatAnalysisData, 5000)
