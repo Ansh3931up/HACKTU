@@ -65,21 +65,27 @@ export default function Chatbot() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      {isOpen ? (
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
+      <div className={`
+        transform transition-all duration-300 ease-in-out
+        ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}
+      `}>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-96 h-[32rem] flex flex-col">
           <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Image
                 src="/image/logo.jpeg"
                 alt="Security Assistant"
-                width={60}
-                height={60}
+                width={32}
+                height={32}
                 className="rounded-full"
               />
               <h3 className="text-lg font-semibold">Security Assistant</h3>
             </div>
-            <button onClick={() => setIsOpen(false)}>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full p-1"
+            >
               <XMarkIcon className="w-6 h-6" />
             </button>
           </div>
@@ -133,20 +139,23 @@ export default function Chatbot() {
             />
           </form>
         </div>
-      ) : (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="bg-purple-50 hover:bg-[#521c93] rounded-full p-1 shadow-lg"
-        >
-          <Image
-            src="/image/logo.jpeg"
-            alt="Chat with Security Assistant"
-            width={60}
-            height={60}
-            className="rounded-full"
-          />
-        </button>
-      )}
+      </div>
+
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`
+          transform transition-all duration-300 ease-in-out
+          bg-white hover:bg-gray-50 rounded-full p-1 shadow-lg
+        `}
+      >
+        <Image
+          src="/image/logo.jpeg"
+          alt="Chat with Security Assistant"
+          width={60}
+          height={60}
+          className="rounded-full"
+        />
+      </button>
     </div>
   )
 } 
