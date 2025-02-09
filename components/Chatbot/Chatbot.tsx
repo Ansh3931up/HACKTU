@@ -17,12 +17,12 @@ export default function Chatbot() {
 
   const sendMessageToAPI = async (message: string) => {
     try {
-      const response = await fetch('http://localhost:5000/chat', {  // Update with your Flask API endpoint
+      const response = await fetch('http://localhost:5000/chatbot/query', {  // Update with your Flask API endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ query:message }),
       })
 
       if (!response.ok) {
