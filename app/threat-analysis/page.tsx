@@ -272,9 +272,8 @@ export default function ThreatAnalysis() {
         subtitle="Monitor network traffic and analyze URLs for threats"
       />
       <div className="container mx-auto p-6">
-        {/* Phishing Analysis Section */}
+        {/* Phishing Analysis Input */}
         <div className="mb-8 bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Phishing URL Analysis</h2>
           <form onSubmit={handlePhishingAnalysis} className="mb-6">
             <div className="flex gap-4">
               <input
@@ -293,138 +292,113 @@ export default function ThreatAnalysis() {
               </button>
             </div>
           </form>
+        </div>
 
-          {phishingPrediction && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-2">Prediction Result</h3>
+        {/* APT Analysis Section - Full Width */}
+        <div className="mb-8">
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold mb-4">APT Detection Results</h2>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Status: {predictions?.status}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Message: {predictions?.message}
+                </p>
+              </div>
+              <div className="overflow-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-2">Index</th>
+                      <th className="px-4 py-2">Source IP</th>
+                      <th className="px-4 py-2">Destination IP</th>
+                      <th className="px-4 py-2">Prediction</th>
+                      <th className="px-4 py-2">Confidence</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {predictions?.predictions.map((pred, index) => (
+                      <tr 
+                        key={index} 
+                        className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 group relative"
+                      >
+                        <td className="px-4 py-2">{pred.index}</td>
+                        <td className="px-4 py-2">{aptData[index]?.['Src IP']}</td>
+                        <td className="px-4 py-2">{aptData[index]?.['Dst IP']}</td>
+                        <td className="px-4 py-2">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            pred.prediction === 'NormalTraffic' 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                          }`}>
+                            {pred.prediction}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                            <div 
+                              className="bg-blue-600 h-2.5 rounded-full"
+                              style={{ width: `${pred.confidence * 100}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-xs text-gray-600 dark:text-gray-400">
+                            {(pred.confidence * 100).toFixed(1)}%
+                          </span>
+                        </td>
+                        {/* Hoverable Details */}
+                        <div className="hidden group-hover:block absolute left-full top-0 ml-4 z-10 w-96 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl">
+                          <h4 className="text-sm font-semibold mb-2">Packet Details</h4>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            {aptData[index] && Object.entries(aptData[index]).map(([key, value]) => (
+                              <div key={key} className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">{key}:</span>
+                                <span className="font-medium">{value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Phishing Results - Show when available */}
+        {phishingPrediction && (
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
+            <h2 className="text-xl font-semibold mb-4">Phishing Analysis Results</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Prediction</p>
-                    <p className={`text-lg font-semibold ${
-                      phishingPrediction.prediction === "1" 
-                        ? "text-red-600 dark:text-red-400"
-                        : "text-green-600 dark:text-green-400"
-                    }`}>
-                      {phishingPrediction.prediction === "1" ? "Phishing" : "Legitimate"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Confidence</p>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                        <div 
-                          className="bg-blue-600 h-2.5 rounded-full"
-                          style={{ width: `${phishingPrediction.confidence * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm">
-                        {(phishingPrediction.confidence * 100).toFixed(1)}%
-                      </span>
+                <h3 className="text-lg font-semibold mb-2">Prediction</h3>
+                <div className="flex items-center justify-between">
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    phishingPrediction.prediction === "1" 
+                      ? "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                      : "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                  }`}>
+                    {phishingPrediction.prediction === "1" ? "Phishing" : "Legitimate"}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                      <div 
+                        className="bg-blue-600 h-2.5 rounded-full"
+                        style={{ width: `${phishingPrediction.confidence * 100}%` }}
+                      ></div>
                     </div>
+                    <span className="text-sm">
+                      {(phishingPrediction.confidence * 100).toFixed(1)}%
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-          )}
-
-          {phishingData && (
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Extracted Features</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Object.entries(phishingData.features).map(([key, value]) => (
-                  <div key={key} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{key}</p>
-                    <p className="text-lg font-semibold">{value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* APT Analysis Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Network Traffic Data */}
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-            <h2 className="text-xl font-semibold mb-4">Network Traffic Data</h2>
-            <div className="overflow-auto max-h-[600px]">
-              <table className="min-w-full">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-4 py-2">Source IP</th>
-                    <th className="px-4 py-2">Destination IP</th>
-                    <th className="px-4 py-2">Protocol</th>
-                    <th className="px-4 py-2">Packets</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {aptData.map((packet, index) => (
-                    <tr key={index} className="border-b dark:border-gray-700">
-                      <td className="px-4 py-2">{packet['Src IP']}</td>
-                      <td className="px-4 py-2">{packet['Dst IP']}</td>
-                      <td className="px-4 py-2">{packet.Protocol}</td>
-                      <td className="px-4 py-2">
-                        Fwd: {packet['Total Fwd Packets']}, Bwd: {packet['Total Bwd Packets']}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           </div>
-
-          {/* Predictions */}
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-            <h2 className="text-xl font-semibold mb-4">APT Detection Results</h2>
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Status: {predictions?.status}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Message: {predictions?.message}
-              </p>
-            </div>
-            <div className="overflow-auto max-h-[600px]">
-              <table className="min-w-full">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-4 py-2">Index</th>
-                    <th className="px-4 py-2">Prediction</th>
-                    <th className="px-4 py-2">Confidence</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {predictions?.predictions.map((pred, index) => (
-                    <tr key={index} className="border-b dark:border-gray-700">
-                      <td className="px-4 py-2">{pred.index}</td>
-                      <td className="px-4 py-2">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          pred.prediction === 'NormalTraffic' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                        }`}>
-                          {pred.prediction}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                          <div 
-                            className="bg-blue-600 h-2.5 rounded-full"
-                            style={{ width: `${pred.confidence * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          {(pred.confidence * 100).toFixed(1)}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )
