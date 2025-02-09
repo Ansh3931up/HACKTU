@@ -268,137 +268,111 @@ export default function ThreatAnalysis() {
   return (
     <div className="min-h-screen bg-[#EEECEF] dark:bg-[#1F1F1F]">
       <Header
-        title="APT & Phishing Detection Analysis"
-        subtitle="Monitor network traffic and analyze URLs for threats"
+        title="APT Detection Analysis"
+        subtitle="Network Traffic Analysis and Predictions"
       />
       <div className="container mx-auto p-6">
-        {/* Phishing Analysis Input */}
-        <div className="mb-8 bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-          <form onSubmit={handlePhishingAnalysis} className="mb-6">
-            <div className="flex gap-4">
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter URL to analyze"
-                className="flex-1 px-4 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
-                required
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Analyze
-              </button>
+        {/* APT Analysis Results */}
+        <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6 mb-8">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">APT Detection Results</h2>
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              <p>Status: {predictions?.status}</p>
+              <p>Message: {predictions?.message}</p>
+              <p>Data Shape: {predictions?.data_shape}</p>
             </div>
-          </form>
-        </div>
+          </div>
 
-        {/* APT Analysis Section - Full Width */}
-        <div className="mb-8">
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl">
-            <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4">APT Detection Results</h2>
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Status: {predictions?.status}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Message: {predictions?.message}
-                </p>
-              </div>
-              <div className="overflow-auto">
-                <table className="min-w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                      <th className="px-4 py-2">Index</th>
-                      <th className="px-4 py-2">Source IP</th>
-                      <th className="px-4 py-2">Destination IP</th>
-                      <th className="px-4 py-2">Prediction</th>
-                      <th className="px-4 py-2">Confidence</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {predictions?.predictions.map((pred, index) => (
-                      <tr 
-                        key={index} 
-                        className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 group relative"
-                      >
-                        <td className="px-4 py-2">{pred.index}</td>
-                        <td className="px-4 py-2">{aptData[index]?.['Src IP']}</td>
-                        <td className="px-4 py-2">{aptData[index]?.['Dst IP']}</td>
-                        <td className="px-4 py-2">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            pred.prediction === 'NormalTraffic' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                          }`}>
-                            {pred.prediction}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2">
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th className="px-4 py-3 text-left">Index</th>
+                  <th className="px-4 py-3 text-left">Source IP</th>
+                  <th className="px-4 py-3 text-left">Destination IP</th>
+                  <th className="px-4 py-3 text-left">Protocol</th>
+                  <th className="px-4 py-3 text-left">Prediction</th>
+                  <th className="px-4 py-3 text-left">Confidence</th>
+                  <th className="px-4 py-3 text-left">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {predictions?.predictions.map((pred, index) => {
+                  const networkData = aptData[index];
+                  return (
+                    <tr key={index} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                      <td className="px-4 py-3">{pred.index}</td>
+                      <td className="px-4 py-3">{networkData?.['Src IP']}</td>
+                      <td className="px-4 py-3">{networkData?.['Dst IP']}</td>
+                      <td className="px-4 py-3">{networkData?.Protocol}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          pred.prediction === 'NormalTraffic' 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                        }`}>
+                          {pred.prediction}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                             <div 
-                              className="bg-blue-600 h-2.5 rounded-full"
+                              className="bg-blue-600 h-2 rounded-full"
                               style={{ width: `${pred.confidence * 100}%` }}
                             ></div>
                           </div>
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
+                          <span className="text-xs">
                             {(pred.confidence * 100).toFixed(1)}%
                           </span>
-                        </td>
-                        {/* Hoverable Details */}
-                        <div className="hidden group-hover:block absolute left-full top-0 ml-4 z-10 w-96 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl">
-                          <h4 className="text-sm font-semibold mb-2">Packet Details</h4>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            {aptData[index] && Object.entries(aptData[index]).map(([key, value]) => (
-                              <div key={key} className="flex justify-between">
-                                <span className="text-gray-600 dark:text-gray-400">{key}:</span>
-                                <span className="font-medium">{value}</span>
-                              </div>
-                            ))}
-                          </div>
                         </div>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button 
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                          onClick={() => {
+                            // You can implement a modal or expandable section here
+                            console.log('Network Data:', networkData);
+                          }}
+                        >
+                          <div className="group relative">
+                            <span>View Details</span>
+                            <div className="hidden group-hover:block absolute left-0 top-full mt-2 w-96 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50">
+                              <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div className="col-span-2 font-semibold mb-2">Packet Details:</div>
+                                {networkData && Object.entries(networkData)
+                                  .filter(([key]) => !['Src IP', 'Dst IP', 'Protocol'].includes(key))
+                                  .map(([key, value]) => (
+                                    <div key={key} className="flex justify-between">
+                                      <span className="text-gray-600 dark:text-gray-400">{key}:</span>
+                                      <span className="font-medium">{value}</span>
+                                    </div>
+                                  ))
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Phishing Results - Show when available */}
-        {phishingPrediction && (
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-            <h2 className="text-xl font-semibold mb-4">Phishing Analysis Results</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-2">Prediction</h3>
-                <div className="flex items-center justify-between">
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-                    phishingPrediction.prediction === "1" 
-                      ? "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
-                      : "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                  }`}>
-                    {phishingPrediction.prediction === "1" ? "Phishing" : "Legitimate"}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-32 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                      <div 
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{ width: `${phishingPrediction.confidence * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm">
-                      {(phishingPrediction.confidence * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
+        {/* Features Used Section */}
+        <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
+          <h3 className="text-lg font-semibold mb-4">Features Used in Analysis</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {predictions?.features_used.map((feature, index) => (
+              <div key={index} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3">
+                <span className="text-sm">{feature}</span>
               </div>
-            </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   )
