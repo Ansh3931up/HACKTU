@@ -40,8 +40,8 @@ const navItems: NavItem[] = [
 ]
 
 const bottomNavItems: NavItem[] = [
-  { name: 'Logout', icon: ArrowLeftOnRectangleIcon, path: '/logout' },
-  { name: 'Settings', icon: Cog6ToothIcon, path: '/settings' },
+  // { name: 'Logout', icon: ArrowLeftOnRectangleIcon, path: '/logout' },
+  // { name: 'Settings', icon: Cog6ToothIcon, path: '/settings' },
 ]
 
 interface SidebarProps {
@@ -153,7 +153,7 @@ export default function Sidebar({ isOpen, setIsOpen, isMobile }: SidebarProps) {
             <div
               className={`flex items-center ${
                 isOpen ? 'px-6' : 'justify-center'
-              } py-4 text-white hover:bg-white/10 cursor-pointer`}
+              } py-2 text-white hover:bg-white/10 cursor-pointer`}
               onClick={toggleTheme}
             >
               {isDarkMode ? (
