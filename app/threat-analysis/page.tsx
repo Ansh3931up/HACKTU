@@ -275,43 +275,43 @@ export default function ThreatAnalysis() {
         subtitle="Advanced Threat Detection & Analysis"
       />
       
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto px-4 py-6">
         {/* Analysis Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                <ChartBarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Total Packets</h3>
-                <p className="text-2xl font-bold">{aptData?.length || 0}</p>
+                <h3 className="text-sm sm:text-lg font-semibold">Total Packets</h3>
+                <p className="text-xl sm:text-2xl font-bold">{aptData?.length || 0}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                <ShieldCheckIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 sm:p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                <ShieldCheckIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Normal Traffic</h3>
-                <p className="text-2xl font-bold">
+                <h3 className="text-sm sm:text-lg font-semibold">Normal Traffic</h3>
+                <p className="text-xl sm:text-2xl font-bold">
                   {predictions?.predictions.filter(p => p.prediction === "NormalTraffic").length || 0}
                 </p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-red-100 dark:bg-red-900/20 rounded-lg">
-                <TableCellsIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4 sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-3">
+              <div className="p-2 sm:p-3 bg-red-100 dark:bg-red-900/20 rounded-lg">
+                <TableCellsIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Suspicious Traffic</h3>
-                <p className="text-2xl font-bold">
+                <h3 className="text-sm sm:text-lg font-semibold">Suspicious Traffic</h3>
+                <p className="text-xl sm:text-2xl font-bold">
                   {predictions?.predictions.filter(p => p.prediction !== "NormalTraffic").length || 0}
                 </p>
               </div>
@@ -321,10 +321,10 @@ export default function ThreatAnalysis() {
 
         {/* Main Content Tabs */}
         <Tab.Group>
-          <Tab.List className="flex space-x-1 rounded-xl bg-white dark:bg-[#111011] p-1 mb-6">
+          <Tab.List className="flex space-x-1 rounded-xl bg-white dark:bg-[#111011] p-1 mb-6 overflow-x-auto">
             <Tab
               className={({ selected }) =>
-                `w-full rounded-lg py-2.5 text-sm font-medium leading-5
+                `flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium leading-5 min-w-[120px]
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -335,7 +335,7 @@ export default function ThreatAnalysis() {
             </Tab>
             <Tab
               className={({ selected }) =>
-                `w-full rounded-lg py-2.5 text-sm font-medium leading-5
+                `flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium leading-5 min-w-[120px]
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -346,7 +346,7 @@ export default function ThreatAnalysis() {
             </Tab>
             <Tab
               className={({ selected }) =>
-                `w-full rounded-lg py-2.5 text-sm font-medium leading-5
+                `flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium leading-5 min-w-[120px]
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -358,36 +358,35 @@ export default function ThreatAnalysis() {
           </Tab.List>
 
           <Tab.Panels>
-            {/* Combined Analysis Panel */}
             <Tab.Panel>
-              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
+              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+                  <table className="min-w-full table-auto">
+                    <thead className="bg-gray-50 dark:bg-gray-800 text-xs sm:text-sm">
                       <tr>
-                        <th className="px-4 py-3 text-left">Index</th>
-                        <th className="px-4 py-3 text-left">Source IP</th>
-                        <th className="px-4 py-3 text-left">Destination IP</th>
-                        <th className="px-4 py-3 text-left">Protocol</th>
-                        <th className="px-4 py-3 text-left">Traffic Type</th>
-                        <th className="px-4 py-3 text-left">Confidence</th>
-                        <th className="px-4 py-3 text-left">Actions</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Index</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Source IP</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Destination IP</th>
+                        <th className="hidden sm:table-cell px-4 py-3 text-left">Protocol</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Traffic Type</th>
+                        <th className="hidden sm:table-cell px-4 py-3 text-left">Confidence</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Details</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="text-xs sm:text-sm">
                       {predictions?.predictions.map((pred, index) => {
                         const networkData = aptData[index];
                         return (
                           <tr key={index} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                            <td className="px-4 py-3">{pred.index + 1}</td>
-                            <td className="px-4 py-3">{networkData?.['Src IP']}</td>
-                            <td className="px-4 py-3">{networkData?.['Dst IP']}</td>
-                            <td className="px-4 py-3">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3">{pred.index + 1}</td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3">{networkData?.['Src IP']}</td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3">{networkData?.['Dst IP']}</td>
+                            <td className="hidden sm:table-cell px-4 py-3">
                               <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs">
                                 {networkData?.Protocol}
                               </span>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3">
                               <span className={`px-2 py-1 rounded-full text-xs ${
                                 pred.prediction === 'NormalTraffic'
                                   ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
@@ -396,7 +395,7 @@ export default function ThreatAnalysis() {
                                 {pred.prediction}
                               </span>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="hidden sm:table-cell px-4 py-3">
                               <div className="flex items-center gap-2">
                                 <div className="w-24 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                                   <div 
@@ -409,7 +408,7 @@ export default function ThreatAnalysis() {
                                 </span>
                               </div>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3">
                               <button 
                                 className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                               >
@@ -465,14 +464,14 @@ export default function ThreatAnalysis() {
 
             {/* Network Details Panel */}
             <Tab.Panel>
-              <div className="grid gap-6">
+              <div className="grid gap-4">
                 {aptData?.map((data, index) => (
-                  <div key={index} className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div key={index} className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {Object.entries(data).map(([key, value]) => (
-                        <div key={key} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{key}</p>
-                          <p className="text-lg font-semibold">{value}</p>
+                        <div key={key} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3">
+                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{key}</p>
+                          <p className="text-sm sm:text-base font-semibold">{value}</p>
                         </div>
                       ))}
                     </div>
@@ -483,12 +482,12 @@ export default function ThreatAnalysis() {
 
             {/* Features Analysis Panel */}
             <Tab.Panel>
-              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-6">
-                <h3 className="text-lg font-semibold mb-4">Features Used in Analysis</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
+                <h3 className="text-base sm:text-lg font-semibold mb-4">Features Used in Analysis</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {predictions?.features_used.map((feature, index) => (
                     <div key={index} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3">
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-xs sm:text-sm">{feature}</span>
                     </div>
                   ))}
                 </div>

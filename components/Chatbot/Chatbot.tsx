@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
 
 interface Message {
   text: string
@@ -67,9 +68,17 @@ export default function Chatbot() {
     <div className="fixed bottom-4 right-4 z-50">
       {isOpen ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-96 h-[32rem] flex flex-col">
-          {/* Header */}
           <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Security Assistant</h3>
+            <div className="flex items-center gap-2">
+              <Image
+                src="/image/logo.jpeg"
+                alt="Security Assistant"
+                width={60}
+                height={60}
+                className="rounded-full"
+              />
+              <h3 className="text-lg font-semibold">Security Assistant</h3>
+            </div>
             <button onClick={() => setIsOpen(false)}>
               <XMarkIcon className="w-6 h-6" />
             </button>
@@ -127,9 +136,15 @@ export default function Chatbot() {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg"
+          className="bg-purple-50 hover:bg-[#521c93] rounded-full p-1 shadow-lg"
         >
-          <ChatBubbleLeftIcon className="w-8 h-8" />
+          <Image
+            src="/image/logo.jpeg"
+            alt="Chat with Security Assistant"
+            width={60}
+            height={60}
+            className="rounded-full"
+          />
         </button>
       )}
     </div>
