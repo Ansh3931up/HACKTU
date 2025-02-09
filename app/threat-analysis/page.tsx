@@ -275,28 +275,36 @@ export default function ThreatAnalysis() {
         subtitle="Advanced Threat Detection & Analysis"
       />
       
-      <div className="container mx-auto px-4 py-6">
-        {/* Analysis Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
-            <div className="flex items-center gap-3">
+
+      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        {/* Analysis Summary Cards - Improved mobile layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-8">
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+
               <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-lg font-semibold">Total Packets</h3>
+
+                <h3 className="text-base sm:text-lg font-semibold">Total Packets</h3>
+
                 <p className="text-xl sm:text-2xl font-bold">{aptData?.length || 0}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
-            <div className="flex items-center gap-3">
+
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+
               <div className="p-2 sm:p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
                 <ShieldCheckIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-lg font-semibold">Normal Traffic</h3>
+
+                <h3 className="text-base sm:text-lg font-semibold">Normal Traffic</h3>
+
                 <p className="text-xl sm:text-2xl font-bold">
                   {predictions?.predictions.filter(p => p.prediction === "NormalTraffic").length || 0}
                 </p>
@@ -304,13 +312,17 @@ export default function ThreatAnalysis() {
             </div>
           </div>
           
-          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4 sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3">
+
+          <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+
               <div className="p-2 sm:p-3 bg-red-100 dark:bg-red-900/20 rounded-lg">
                 <TableCellsIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-lg font-semibold">Suspicious Traffic</h3>
+
+                <h3 className="text-base sm:text-lg font-semibold">Suspicious Traffic</h3>
+
                 <p className="text-xl sm:text-2xl font-bold">
                   {predictions?.predictions.filter(p => p.prediction !== "NormalTraffic").length || 0}
                 </p>
@@ -319,12 +331,98 @@ export default function ThreatAnalysis() {
           </div>
         </div>
 
-        {/* Main Content Tabs */}
+        {/* URL Phishing Analysis - Further mobile optimizations */}
+        <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-3 sm:p-6 mb-4 sm:mb-8">
+          <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">URL Phishing Analysis</h3>
+          <form onSubmit={handlePhishingAnalysis} className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Enter URL to analyze"
+              className="w-full flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-lg dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              Analyze
+            </button>
+          </form>
+
+          {phishingPrediction && (
+            <div className="space-y-3 sm:space-y-4">
+              {/* Result Badge - More compact on mobile */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className={`w-full sm:w-auto px-3 py-1.5 sm:py-2 rounded-lg text-sm ${
+                  phishingPrediction.prediction === "0" 
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                    : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                }`}>
+                  <div className="flex items-center justify-between sm:justify-start">
+                    <span className="font-semibold">
+                      {phishingPrediction.prediction === "0" ? "Safe Website" : "Potential Phishing"}
+                    </span>
+                    <span className="ml-2 text-xs sm:text-sm">
+                      ({(phishingPrediction.confidence * 100).toFixed(1)}% confidence)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Analysis Details - Improved mobile layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
+                <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3 sm:p-4">
+                  <h4 className="font-semibold mb-2 text-sm sm:text-base">Key Features</h4>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    {Object.entries(phishingPrediction.feature_values)
+                      .slice(0, 10)
+                      .map(([key, value]) => (
+                        <div key={key} className="flex justify-between items-center text-xs sm:text-sm">
+                          <span className="text-gray-600 dark:text-gray-400 truncate mr-2">
+                            {key.replace(/_/g, ' ')}:
+                          </span>
+                          <span className="font-medium">{value}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                {phishingData && (
+                  <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3 sm:p-4">
+                    <h4 className="font-semibold mb-2 text-sm sm:text-base">URL Analysis</h4>
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <div className="flex flex-col text-xs sm:text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">URL:</span>
+                        <span className="font-medium break-all mt-1">{phishingData.url}</span>
+                      </div>
+                      {Object.entries(phishingData.features)
+                        .slice(0, 10)
+                        .map(([key, value]) => (
+                          <div key={key} className="flex justify-between items-center text-xs sm:text-sm">
+                            <span className="text-gray-600 dark:text-gray-400 truncate mr-2">
+                              {key.replace(/_/g, ' ')}:
+                            </span>
+                            <span className="font-medium">{value}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Tab Group - Enhanced mobile experience */}
         <Tab.Group>
-          <Tab.List className="flex space-x-1 rounded-xl bg-white dark:bg-[#111011] p-1 mb-6 overflow-x-auto">
+
+          <Tab.List className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1 rounded-xl bg-white dark:bg-[#111011] p-1.5 sm:p-2 mb-4 sm:mb-6 overflow-x-auto">
             <Tab
               className={({ selected }) =>
-                `flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium leading-5 min-w-[120px]
+                `w-full sm:w-auto whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200
+
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -335,7 +433,9 @@ export default function ThreatAnalysis() {
             </Tab>
             <Tab
               className={({ selected }) =>
-                `flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium leading-5 min-w-[120px]
+
+                `w-full sm:w-auto whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200
+
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -346,7 +446,9 @@ export default function ThreatAnalysis() {
             </Tab>
             <Tab
               className={({ selected }) =>
-                `flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium leading-5 min-w-[120px]
+
+                `w-full sm:w-auto whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200
+
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -359,18 +461,20 @@ export default function ThreatAnalysis() {
 
           <Tab.Panels>
             <Tab.Panel>
-              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full table-auto">
-                    <thead className="bg-gray-50 dark:bg-gray-800 text-xs sm:text-sm">
+
+              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-2 sm:p-6">
+                <div className="overflow-x-auto -mx-2 sm:mx-0">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-800">
                       <tr>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Index</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Source IP</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Destination IP</th>
-                        <th className="hidden sm:table-cell px-4 py-3 text-left">Protocol</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Traffic Type</th>
-                        <th className="hidden sm:table-cell px-4 py-3 text-left">Confidence</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3 text-left">Details</th>
+                        <th className="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">Index</th>
+                        <th className="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">Source IP</th>
+                        <th className="hidden sm:table-cell px-4 py-2 text-left text-sm font-medium">Destination IP</th>
+                        <th className="hidden sm:table-cell px-4 py-2 text-left text-sm font-medium">Protocol</th>
+                        <th className="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">Type</th>
+                        <th className="hidden sm:table-cell px-4 py-2 text-left text-sm font-medium">Confidence</th>
+                        <th className="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">Actions</th>
+
                       </tr>
                     </thead>
                     <tbody className="text-xs sm:text-sm">
@@ -380,7 +484,9 @@ export default function ThreatAnalysis() {
                           <tr key={index} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
                             <td className="px-2 sm:px-4 py-2 sm:py-3">{pred.index + 1}</td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3">{networkData?.['Src IP']}</td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3">{networkData?.['Dst IP']}</td>
+
+                            <td className="hidden sm:table-cell px-4 py-3">{networkData?.['Dst IP']}</td>
+
                             <td className="hidden sm:table-cell px-4 py-3">
                               <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs">
                                 {networkData?.Protocol}
@@ -414,7 +520,7 @@ export default function ThreatAnalysis() {
                               >
                                 <div className="group relative">
                                   <span>View Details</span>
-                                  <div className="hidden group-hover:block absolute left-0 top-full mt-2 w-[32rem] p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50">
+                                  <div className="hidden group-hover:block absolute right-0 top-full mt-2 w-[32rem] p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50">
                                     <div className="grid grid-cols-2 gap-4">
                                       <div>
                                         <h4 className="font-semibold mb-2">Network Metrics</h4>
@@ -462,29 +568,33 @@ export default function ThreatAnalysis() {
               </div>
             </Tab.Panel>
 
-            {/* Network Details Panel */}
             <Tab.Panel>
-              <div className="grid gap-4">
-                {aptData?.map((data, index) => (
-                  <div key={index} className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {Object.entries(data).map(([key, value]) => (
-                        <div key={key} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3">
-                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{key}</p>
-                          <p className="text-sm sm:text-base font-semibold">{value}</p>
-                        </div>
-                      ))}
+
+              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-2 sm:p-6">
+                <div className="grid gap-4 sm:gap-6">
+                  {aptData?.map((data, index) => (
+                    <div key={index} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3 sm:p-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                        {Object.entries(data).map(([key, value]) => (
+                          <div key={key} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-4">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{key}</p>
+                            <p className="text-lg font-semibold">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </Tab.Panel>
 
-            {/* Features Analysis Panel */}
             <Tab.Panel>
-              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-xl p-4">
-                <h3 className="text-base sm:text-lg font-semibold mb-4">Features Used in Analysis</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+
+              <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-2 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Features Used in Analysis</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+
                   {predictions?.features_used.map((feature, index) => (
                     <div key={index} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3">
                       <span className="text-xs sm:text-sm">{feature}</span>
