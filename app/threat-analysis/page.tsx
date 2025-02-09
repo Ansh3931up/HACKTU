@@ -275,28 +275,36 @@ export default function ThreatAnalysis() {
         subtitle="Advanced Threat Detection & Analysis"
       />
       
+
       <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Analysis Summary Cards - Improved mobile layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-8">
           <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-4 sm:p-6">
             <div className="flex items-center gap-3 sm:gap-4">
+
               <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
+
                 <h3 className="text-base sm:text-lg font-semibold">Total Packets</h3>
+
                 <p className="text-xl sm:text-2xl font-bold">{aptData?.length || 0}</p>
               </div>
             </div>
           </div>
           
+
           <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-4 sm:p-6">
             <div className="flex items-center gap-3 sm:gap-4">
+
               <div className="p-2 sm:p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
                 <ShieldCheckIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
+
                 <h3 className="text-base sm:text-lg font-semibold">Normal Traffic</h3>
+
                 <p className="text-xl sm:text-2xl font-bold">
                   {predictions?.predictions.filter(p => p.prediction === "NormalTraffic").length || 0}
                 </p>
@@ -304,13 +312,17 @@ export default function ThreatAnalysis() {
             </div>
           </div>
           
+
           <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-4 sm:p-6">
             <div className="flex items-center gap-3 sm:gap-4">
+
               <div className="p-2 sm:p-3 bg-red-100 dark:bg-red-900/20 rounded-lg">
                 <TableCellsIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
+
                 <h3 className="text-base sm:text-lg font-semibold">Suspicious Traffic</h3>
+
                 <p className="text-xl sm:text-2xl font-bold">
                   {predictions?.predictions.filter(p => p.prediction !== "NormalTraffic").length || 0}
                 </p>
@@ -405,10 +417,12 @@ export default function ThreatAnalysis() {
 
         {/* Tab Group - Enhanced mobile experience */}
         <Tab.Group>
+
           <Tab.List className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1 rounded-xl bg-white dark:bg-[#111011] p-1.5 sm:p-2 mb-4 sm:mb-6 overflow-x-auto">
             <Tab
               className={({ selected }) =>
                 `w-full sm:w-auto whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200
+
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -419,7 +433,9 @@ export default function ThreatAnalysis() {
             </Tab>
             <Tab
               className={({ selected }) =>
+
                 `w-full sm:w-auto whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200
+
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -430,7 +446,9 @@ export default function ThreatAnalysis() {
             </Tab>
             <Tab
               className={({ selected }) =>
+
                 `w-full sm:w-auto whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200
+
                  ${selected 
                    ? 'bg-blue-600 text-white shadow'
                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
@@ -443,6 +461,7 @@ export default function ThreatAnalysis() {
 
           <Tab.Panels>
             <Tab.Panel>
+
               <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-2 sm:p-6">
                 <div className="overflow-x-auto -mx-2 sm:mx-0">
                   <table className="min-w-full">
@@ -455,16 +474,19 @@ export default function ThreatAnalysis() {
                         <th className="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">Type</th>
                         <th className="hidden sm:table-cell px-4 py-2 text-left text-sm font-medium">Confidence</th>
                         <th className="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm font-medium">Actions</th>
+
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="text-xs sm:text-sm">
                       {predictions?.predictions.map((pred, index) => {
                         const networkData = aptData[index];
                         return (
                           <tr key={index} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
                             <td className="px-2 sm:px-4 py-2 sm:py-3">{pred.index + 1}</td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3">{networkData?.['Src IP']}</td>
+
                             <td className="hidden sm:table-cell px-4 py-3">{networkData?.['Dst IP']}</td>
+
                             <td className="hidden sm:table-cell px-4 py-3">
                               <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs">
                                 {networkData?.Protocol}
@@ -547,6 +569,7 @@ export default function ThreatAnalysis() {
             </Tab.Panel>
 
             <Tab.Panel>
+
               <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-2 sm:p-6">
                 <div className="grid gap-4 sm:gap-6">
                   {aptData?.map((data, index) => (
@@ -559,6 +582,7 @@ export default function ThreatAnalysis() {
                           </div>
                         ))}
                       </div>
+
                     </div>
                   ))}
                 </div>
@@ -566,12 +590,14 @@ export default function ThreatAnalysis() {
             </Tab.Panel>
 
             <Tab.Panel>
+
               <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-2 sm:p-6">
                 <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Features Used in Analysis</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+
                   {predictions?.features_used.map((feature, index) => (
                     <div key={index} className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-3">
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-xs sm:text-sm">{feature}</span>
                     </div>
                   ))}
                 </div>
