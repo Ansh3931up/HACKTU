@@ -334,22 +334,28 @@ export default function ThreatAnalysis() {
         {/* URL Phishing Analysis - Further mobile optimizations */}
         <div className="bg-white dark:bg-[#111011] rounded-lg shadow-md sm:shadow-xl p-3 sm:p-6 mb-4 sm:mb-8">
           <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">URL Phishing Analysis</h3>
-          <form onSubmit={handlePhishingAnalysis} className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
             <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handlePhishingAnalysis(e);
+                }
+              }}
               placeholder="Enter URL to analyze"
               className="w-full flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-lg dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required
             />
             <button
-              type="submit"
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              onClick={(e) => handlePhishingAnalysis(e)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
               Analyze
             </button>
-          </form>
+          </div>
 
           {phishingPrediction && (
             <div className="space-y-3 sm:space-y-4">
