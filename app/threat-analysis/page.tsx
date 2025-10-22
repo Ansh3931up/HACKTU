@@ -222,6 +222,173 @@ export default function ThreatAnalysis() {
 
   // Add new useEffects
   useEffect(() => {
+    // Initialize with dummy APT data
+    const dummyAptData: APTData[] = [
+      {
+        Src_IP: "192.168.1.100",
+        Dst_IP: "10.0.0.50",
+        Src_Port: 443,
+        Dst_Port: 80,
+        Protocol: 6,
+        Flow_Duration: 120,
+        Total_Fwd_Packets: 150,
+        Total_Bwd_Packets: 200,
+        Total_Length_of_Fwd_Packets: 7500,
+        Total_Length_of_Bwd_Packets: 10000,
+        "Flow Bytes/s": 145.83,
+        "Flow Packets/s": 2.92,
+        "Fwd Packet Length Max": 1500,
+        "Bwd Packet Length Max": 2000
+      },
+      {
+        Src_IP: "172.16.0.15",
+        Dst_IP: "192.168.1.200",
+        Src_Port: 22,
+        Dst_Port: 22,
+        Protocol: 6,
+        Flow_Duration: 300,
+        Total_Fwd_Packets: 500,
+        Total_Bwd_Packets: 450,
+        Total_Length_of_Fwd_Packets: 25000,
+        Total_Length_of_Bwd_Packets: 22500,
+        "Flow Bytes/s": 158.33,
+        "Flow Packets/s": 3.17,
+        "Fwd Packet Length Max": 1000,
+        "Bwd Packet Length Max": 1000
+      },
+      {
+        Src_IP: "10.0.0.100",
+        Dst_IP: "8.8.8.8",
+        Src_Port: 53,
+        Dst_Port: 53,
+        Protocol: 17,
+        Flow_Duration: 5,
+        Total_Fwd_Packets: 1,
+        Total_Bwd_Packets: 1,
+        Total_Length_of_Fwd_Packets: 100,
+        Total_Length_of_Bwd_Packets: 200,
+        "Flow Bytes/s": 60,
+        "Flow Packets/s": 0.4,
+        "Fwd Packet Length Max": 100,
+        "Bwd Packet Length Max": 200
+      }
+    ];
+    setAptData(dummyAptData);
+
+    // Initialize with dummy predictions
+    const dummyPredictions: APTResponse = {
+      data_shape: 3,
+      features_used: [
+        "Flow Duration",
+        "Flow Bytes/s",
+        "Flow Packets/s",
+        "Fwd Packet Length Max",
+        "Bwd Packet Length Max"
+      ],
+      message: "Analysis completed successfully",
+      predictions: [
+        {
+          confidence: 0.95,
+          index: 0,
+          prediction: "NormalTraffic"
+        },
+        {
+          confidence: 0.85,
+          index: 1,
+          prediction: "SuspiciousTraffic"
+        },
+        {
+          confidence: 0.99,
+          index: 2,
+          prediction: "NormalTraffic"
+        }
+      ],
+      status: "success"
+    };
+    setPredictions(dummyPredictions);
+
+    // Initialize with dummy phishing data
+    const dummyPhishingData: PhishingData = {
+      features: {
+        directory_length: 3,
+        domain_google_index: 1,
+        domain_in_ip: 0,
+        domain_length: 10,
+        domain_age: 3650,
+        https_token: 1,
+        ip_in_domain: 0,
+        is_https: 1,
+        long_url: 0,
+        nb_dots: 2,
+        nb_hyphens: 0,
+        nb_qm: 0,
+        nb_slash: 2,
+        nb_www: 1,
+        prefix_suffix: 0,
+        short_url: 0,
+        suspicious_tld: 0,
+        tld_in_subdomain: 0,
+        tld_in_path: 0
+      },
+      message: "URL features extracted successfully",
+      url: "https://www.example.com/login"
+    };
+    setPhishingData(dummyPhishingData);
+
+    // Initialize with dummy phishing prediction
+    const dummyPhishingPrediction: PhishingPrediction = {
+      confidence: 0.92,
+      feature_values: {
+        directory_length: 3,
+        domain_google_index: 1,
+        domain_in_ip: 0,
+        domain_length: 10,
+        domain_age: 3650,
+        https_token: 1,
+        ip_in_domain: 0,
+        is_https: 1,
+        long_url: 0,
+        nb_dots: 2,
+        nb_hyphens: 0,
+        nb_qm: 0,
+        nb_slash: 2,
+        nb_www: 1,
+        prefix_suffix: 0,
+        short_url: 0,
+        suspicious_tld: 0,
+        tld_in_subdomain: 0,
+        tld_in_path: 0
+      },
+      features_used: [
+        "directory_length",
+        "domain_google_index",
+        "domain_in_ip",
+        "domain_length",
+        "domain_age",
+        "https_token",
+        "ip_in_domain",
+        "is_https",
+        "long_url",
+        "nb_dots",
+        "nb_hyphens",
+        "nb_qm",
+        "nb_slash",
+        "nb_www",
+        "prefix_suffix",
+        "short_url",
+        "suspicious_tld",
+        "tld_in_subdomain",
+        "tld_in_path"
+      ],
+      message: "Prediction completed successfully",
+      prediction: "0"
+    };
+    setPhishingPrediction(dummyPhishingPrediction);
+
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
     doublelogs();
   }, []);
 
